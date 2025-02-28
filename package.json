@@ -6,8 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy": "next build && touch out/.nojekyll && git add -f out/ && git commit -m \"Deploy to gh-pages\" && git subtree push --prefix out origin gh-pages"
   },
+  "homepage": "https://stanleyluong.github.io/TaskApp",
   "dependencies": {
     "@prisma/client": "^6.4.1",
     "jsonwebtoken": "^9.0.2",

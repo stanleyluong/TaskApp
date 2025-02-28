@@ -8,16 +8,18 @@ export function middleware(request: NextRequest) {
   console.log('Token cookie exists:', hasToken);
   
   // Only handle specific auth redirects, nothing else
-  if (!hasToken && request.nextUrl.pathname.startsWith('/dashboard')) {
+  const basePath = '/TaskApp';
+  
+  if (!hasToken && request.nextUrl.pathname.startsWith(`${basePath}/dashboard`)) {
     console.log('No token found - redirecting to login');
-    return NextResponse.redirect(new URL('/login', request.url));
+    return NextResponse.redirect(new URL(`${basePath}/login`, request.url));
   }
   
   if (hasToken && 
-      (request.nextUrl.pathname === '/login' || 
-       request.nextUrl.pathname === '/register')) {
+      (request.nextUrl.pathname === `${basePath}/login` || 
+       request.nextUrl.pathname === `${basePath}/register`)) {
     console.log('Auth page access with token - redirecting to dashboard');
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    return NextResponse.redirect(new URL(`${basePath}/dashboard`, request.url));
   }
 
   console.log('Middleware completed, proceeding to next handler');
@@ -26,9 +28,9 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/dashboard',
-    '/dashboard/:path*', 
-    '/login', 
-    '/register'
+    '/TaskApp/dashboard',
+    '/TaskApp/dashboard/:path*', 
+    '/TaskApp/login', 
+    '/TaskApp/register'
   ],
 };
