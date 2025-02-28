@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Skip middleware execution during static export
+const isStaticExport = process.env.GITHUB_ACTIONS === 'true';
+
 export function middleware(request: NextRequest) {
+  // Skip middleware for static export builds
+  if (isStaticExport) {
+    return NextResponse.next();
+  }
+  
   console.log('Middleware running for path:', request.nextUrl.pathname);
   
   // Check for token cookie existence only
