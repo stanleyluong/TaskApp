@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getUserFromRequest } from '@/lib/auth/utils';
+import { withAuth, UserJwtPayload } from '@/lib/api-auth';
 
 // Get all tasks for the current user
-export async function GET(request: NextRequest) {
+export const GET = withAuth(async (request: NextRequest, user: UserJwtPayload) => {
   try {
-    const user = getUserFromRequest(request);
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
+    console.log('Fetching tasks for user:', user.id);
+    
     const searchParams = request.nextUrl.searchParams;
     const status = searchParams.get('status') || undefined;
     const priority = searchParams.get('priority') || undefined;
@@ -38,16 +35,11 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // Create a new task
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async (request: NextRequest, user: UserJwtPayload) => {
   try {
-    const user = getUserFromRequest(request);
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { title, description, status, priority, categoryId, dueDate } = await request.json();
 
     if (!title) {
@@ -80,4 +72,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getUserFromRequest } from '@/lib/auth/utils';
+import { withAuth, UserJwtPayload } from '@/lib/api-auth';
 
 // Get all categories
-export async function GET(request: NextRequest) {
+export const GET = withAuth(async (request: NextRequest, user: UserJwtPayload) => {
   try {
-    const user = getUserFromRequest(request);
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
+    console.log('Fetching categories for user:', user.id);
+    
     const categories = await prisma.category.findMany({
       orderBy: {
         name: 'asc',
@@ -24,16 +21,11 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // Create a new category
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async (request: NextRequest, user: UserJwtPayload) => {
   try {
-    const user = getUserFromRequest(request);
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { name } = await request.json();
 
     if (!name) {
@@ -57,4 +49,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

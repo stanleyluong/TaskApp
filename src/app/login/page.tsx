@@ -12,6 +12,7 @@ export default function LoginPage() {
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -21,10 +22,11 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setDebugInfo(null);
     setLoading(true);
 
     try {
-      console.log("Attempting login...");
+      console.log("Attempting login with email:", formData.email);
       
       const response = await fetch("/api/auth/login", {
         method: "POST",
@@ -35,17 +37,29 @@ export default function LoginPage() {
 
       console.log("Login response status:", response.status);
       const data = await response.json();
-      console.log("Login response data:", data);
+      
+      // Debug information
+      const debugMessage = `
+        Status: ${response.status}
+        Response body: ${JSON.stringify(data, null, 2)}
+        Cookies: ${document.cookie}
+      `;
+      console.log(debugMessage);
+      setDebugInfo(debugMessage);
 
       if (!response.ok) {
         throw new Error(data.error || "Login failed");
       }
 
-      // Create dummy form to force navigation
-      console.log("Login successful, redirecting to dashboard...");
-      
-      // Redirect through the special redirect endpoint
-      window.location.href = '/api/auth/redirect?to=/dashboard';
+      // Try both navigation methods
+      console.log("Login successful, attempting to redirect...");
+      try {
+        router.push("/dashboard");
+      } catch (navError) {
+        console.error("Next router navigation failed:", navError);
+        // Fallback to window.location
+        window.location.href = "/dashboard";
+      }
       
     } catch (err) {
       console.error("Login error:", err);
@@ -123,6 +137,13 @@ export default function LoginPage() {
             </Link>
           </p>
         </div>
+
+        {debugInfo && (
+          <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-900 rounded-md overflow-x-auto">
+            <h3 className="text-sm font-bold mb-2">Debug Information:</h3>
+            <pre className="text-xs whitespace-pre-wrap">{debugInfo}</pre>
+          </div>
+        )}
       </div>
     </div>
   );

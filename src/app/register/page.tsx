@@ -24,9 +24,7 @@ export default function RegisterPage() {
     setError(null);
     setLoading(true);
 
-    try {
-      console.log("Attempting registration...");
-      
+    try {      
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -34,18 +32,14 @@ export default function RegisterPage() {
         credentials: "include" // Important for cookies
       });
 
-      console.log("Registration response status:", response.status);
       const data = await response.json();
-      console.log("Registration response data:", data);
 
       if (!response.ok) {
         throw new Error(data.error || "Registration failed");
       }
 
-      console.log("Registration successful, redirecting to dashboard...");
-      
-      // Redirect through the special redirect endpoint
-      window.location.href = '/api/auth/redirect?to=/dashboard';
+      // Redirect directly to dashboard on success
+      router.push("/dashboard");
       
     } catch (err) {
       console.error("Registration error:", err);

@@ -1,44 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromRequest } from './lib/auth/utils';
 
 export function middleware(request: NextRequest) {
-  console.log('Middleware triggered for path:', request.nextUrl.pathname);
+  console.log('Middleware running for path:', request.nextUrl.pathname);
   
-  const user = getUserFromRequest(request);
-  console.log('User from request:', user ? 'authenticated' : 'not authenticated');
+  // Check for token cookie existence only
+  const hasToken = request.cookies.has('token');
+  console.log('Token cookie exists:', hasToken);
   
-  // Protect API routes in the /api/tasks path
-  if (request.nextUrl.pathname.startsWith('/api/tasks')) {
-    if (!user) {
-      console.log('API route access denied - unauthorized');
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
+  // Only handle specific auth redirects, nothing else
+  if (!hasToken && request.nextUrl.pathname.startsWith('/dashboard')) {
+    console.log('No token found - redirecting to login');
+    return NextResponse.redirect(new URL('/login', request.url));
   }
   
-  // Protect dashboard routes
-  if (request.nextUrl.pathname.startsWith('/dashboard')) {
-    if (!user) {
-      console.log('Dashboard access denied - redirecting to login');
-      return NextResponse.redirect(new URL('/login', request.url));
-    }
-    console.log('Dashboard access granted');
-  }
-  
-  // Redirect logged in users away from auth pages
-  if (
-    user && 
-    (request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/register')
-  ) {
-    console.log('Auth page access while logged in - redirecting to dashboard');
+  if (hasToken && 
+      (request.nextUrl.pathname === '/login' || 
+       request.nextUrl.pathname === '/register')) {
+    console.log('Auth page access with token - redirecting to dashboard');
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
+  console.log('Middleware completed, proceeding to next handler');
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/api/tasks/:path*', '/dashboard/:path*', '/login', '/register'],
+  matcher: [
+    '/dashboard',
+    '/dashboard/:path*', 
+    '/login', 
+    '/register'
+  ],
 };

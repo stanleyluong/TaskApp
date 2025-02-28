@@ -1,18 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getUserFromRequest } from '@/lib/auth/utils';
+import { withAuthParams, UserJwtPayload } from '@/lib/api-auth';
 
 // Get a specific task
-export async function GET(
-  request: NextRequest,
+export const GET = withAuthParams(async (
+  request: NextRequest, 
+  user: UserJwtPayload,
   { params }: { params: { id: string } }
-) {
+) => {
   try {
-    const user = getUserFromRequest(request);
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const taskId = params.id;
     
     const task = await prisma.task.findUnique({
@@ -40,19 +36,15 @@ export async function GET(
       { status: 500 }
     );
   }
-}
+});
 
 // Update a task
-export async function PUT(
-  request: NextRequest,
+export const PUT = withAuthParams(async (
+  request: NextRequest, 
+  user: UserJwtPayload,
   { params }: { params: { id: string } }
-) {
+) => {
   try {
-    const user = getUserFromRequest(request);
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const taskId = params.id;
     const { title, description, status, priority, categoryId, dueDate } = await request.json();
 
@@ -97,19 +89,15 @@ export async function PUT(
       { status: 500 }
     );
   }
-}
+});
 
 // Delete a task
-export async function DELETE(
-  request: NextRequest,
+export const DELETE = withAuthParams(async (
+  request: NextRequest, 
+  user: UserJwtPayload,
   { params }: { params: { id: string } }
-) {
+) => {
   try {
-    const user = getUserFromRequest(request);
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const taskId = params.id;
 
     // Check if task exists and belongs to user
@@ -142,4 +130,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-}
+});

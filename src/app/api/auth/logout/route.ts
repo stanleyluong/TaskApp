@@ -1,15 +1,15 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST() {
-  const response = NextResponse.json({ success: true });
+export async function POST(request: NextRequest) {
+  console.log('Logging user out');
+  
+  // Create response to clear the token cookie and redirect to login page
+  const response = NextResponse.redirect(new URL('/login', request.url));
   
   // Clear the token cookie
   response.cookies.set('token', '', {
-    httpOnly: true,
-    path: '/',
     expires: new Date(0),
-    sameSite: 'strict',
-    secure: process.env.NODE_ENV === 'production',
+    path: '/',
   });
   
   return response;

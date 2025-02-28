@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
@@ -33,19 +34,31 @@ export default function Navbar() {
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <Link
                 href="/dashboard"
-                className="border-transparent text-gray-900 dark:text-gray-100 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                className={`${
+                  pathname === '/dashboard'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-900 dark:text-gray-100 hover:border-gray-300'
+                } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
               >
                 Dashboard
               </Link>
               <Link
                 href="/dashboard/tasks"
-                className="border-transparent text-gray-900 dark:text-gray-100 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                className={`${
+                  pathname === '/dashboard/tasks'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-900 dark:text-gray-100 hover:border-gray-300'
+                } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
               >
                 Tasks
               </Link>
               <Link
                 href="/dashboard/categories"
-                className="border-transparent text-gray-900 dark:text-gray-100 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                className={`${
+                  pathname === '/dashboard/categories'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-900 dark:text-gray-100 hover:border-gray-300'
+                } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
               >
                 Categories
               </Link>
