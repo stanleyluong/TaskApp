@@ -43,6 +43,11 @@ jobs:
         run: |
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+      # Create empty API route stubs for static export
+      - name: Create API route stubs
+        run: |
+          mkdir -p .next/server/app/api
+          echo '{}' > .next/server/app/api/route.json
       - name: Build with Next.js
         run: npm run build
         env:
