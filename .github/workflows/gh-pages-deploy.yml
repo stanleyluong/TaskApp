@@ -43,12 +43,8 @@ jobs:
         run: |
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-      # Create a 404.html page that will route correctly
-      - name: Prepare for static export
-        run: |
-          echo "// This is a dummy file to avoid build errors" > src/app/api/dummy.ts
-      - name: Build with Next.js
-        run: npm run build
+      - name: Build for static export
+        run: npm run build:static
         env:
           GITHUB_ACTIONS: true
       - name: Add .nojekyll file

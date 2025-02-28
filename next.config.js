@@ -1,16 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  basePath: process.env.GITHUB_ACTIONS ? '/TaskApp' : '',
-  assetPrefix: process.env.GITHUB_ACTIONS ? '/TaskApp/' : '',
+  basePath: process.env.GITHUB_ACTIONS || process.env.NEXT_STATIC_EXPORT ? '/TaskApp' : '',
+  assetPrefix: process.env.GITHUB_ACTIONS || process.env.NEXT_STATIC_EXPORT ? '/TaskApp/' : '',
 };
 
-// This is a special config for GitHub Pages static export
-if (process.env.GITHUB_ACTIONS) {
+// This is a special config for static export (GitHub Pages)
+if (process.env.GITHUB_ACTIONS || process.env.NEXT_STATIC_EXPORT) {
   // Static export configuration
   nextConfig.output = 'export';
   nextConfig.images = { unoptimized: true };
-  nextConfig.distDir = 'out';
   
   // Skip validation during build
   nextConfig.typescript = {
@@ -18,13 +17,6 @@ if (process.env.GITHUB_ACTIONS) {
   };
   nextConfig.eslint = {
     ignoreDuringBuilds: true,
-  };
-  
-  // Skip API routes in static export
-  nextConfig.experimental = {
-    excludeRoutes: [
-      '/api/:path*',  // Exclude all API routes
-    ],
   };
 }
 
