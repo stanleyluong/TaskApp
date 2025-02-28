@@ -39,10 +39,10 @@ export function withAuth(
 }
 
 // Auth wrapper for dynamic route APIs that need params
-export function withAuthParams<T>(
-  handler: (req: NextRequest, user: UserJwtPayload, context: { params: T }) => Promise<NextResponse>
-): (req: NextRequest, context: { params: T }) => Promise<NextResponse> {
-  return async (req: NextRequest, context: { params: T }) => {
+export function withAuthParams(
+  handler: (req: NextRequest, user: UserJwtPayload, context: any) => Promise<NextResponse>
+): (req: NextRequest, context: any) => Promise<NextResponse> {
+  return async (req: NextRequest, context: any) => {
     try {
       // Get token from cookie
       const token = req.cookies.get('token')?.value;
