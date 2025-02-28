@@ -5,11 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:static": "node scripts/prepare-static-export.js && cross-env NEXT_STATIC_EXPORT=true next build",
     "start": "next start",
     "lint": "next lint"
   },
-  "homepage": "https://stanleyluong.github.io/TaskApp",
   "dependencies": {
     "@prisma/client": "^6.4.1",
     "jsonwebtoken": "^9.0.2",

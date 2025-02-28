@@ -2,10 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { withAuth, UserJwtPayload } from '@/lib/api-auth';
 
-// For static export compatibility
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
-
 // Get all tasks for the current user
 export const GET = withAuth(async (request: NextRequest, user: UserJwtPayload) => {
   try {

@@ -1,34 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Skip middleware execution during static export
-const isStaticExport = process.env.GITHUB_ACTIONS === 'true';
-
 export function middleware(request: NextRequest) {
-  // Skip middleware for static export builds
-  if (isStaticExport) {
-    return NextResponse.next();
-  }
-  
   console.log('Middleware running for path:', request.nextUrl.pathname);
   
   // Check for token cookie existence only
   const hasToken = request.cookies.has('token');
   console.log('Token cookie exists:', hasToken);
   
-  // Get the base path dynamically from the request URL
-  const url = new URL(request.url);
-  const basePath = url.pathname.startsWith('/TaskApp') ? '/TaskApp' : '';
-  
-  if (!hasToken && request.nextUrl.pathname.includes('/dashboard')) {
+  if (!hasToken && request.nextUrl.pathname.startsWith('/dashboard')) {
     console.log('No token found - redirecting to login');
-    return NextResponse.redirect(new URL(`${basePath}/login`, request.url));
+    return NextResponse.redirect(new URL('/login', request.url));
   }
   
   if (hasToken && 
-      (request.nextUrl.pathname.endsWith('/login') || 
-       request.nextUrl.pathname.endsWith('/register'))) {
+      (request.nextUrl.pathname === '/login' || 
+       request.nextUrl.pathname === '/register')) {
     console.log('Auth page access with token - redirecting to dashboard');
-    return NextResponse.redirect(new URL(`${basePath}/dashboard`, request.url));
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   console.log('Middleware completed, proceeding to next handler');
@@ -40,10 +28,6 @@ export const config = {
     '/dashboard',
     '/dashboard/:path*', 
     '/login', 
-    '/register',
-    '/TaskApp/dashboard',
-    '/TaskApp/dashboard/:path*', 
-    '/TaskApp/login', 
-    '/TaskApp/register'
+    '/register'
   ],
 };
