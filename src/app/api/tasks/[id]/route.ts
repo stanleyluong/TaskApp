@@ -6,8 +6,9 @@ import { withAuthParams, UserJwtPayload } from '@/lib/api-auth';
 export const GET = withAuthParams(async (
   request: NextRequest, 
   user: UserJwtPayload,
-  { params }: { params: { id: string } }
+  context
 ) => {
+  const { params } = context;
   try {
     const taskId = params.id;
     
@@ -42,8 +43,9 @@ export const GET = withAuthParams(async (
 export const PUT = withAuthParams(async (
   request: NextRequest, 
   user: UserJwtPayload,
-  { params }: { params: { id: string } }
+  context
 ) => {
+  const { params } = context;
   try {
     const taskId = params.id;
     const { title, description, status, priority, categoryId, dueDate } = await request.json();
@@ -95,8 +97,9 @@ export const PUT = withAuthParams(async (
 export const DELETE = withAuthParams(async (
   request: NextRequest, 
   user: UserJwtPayload,
-  { params }: { params: { id: string } }
+  context
 ) => {
+  const { params } = context;
   try {
     const taskId = params.id;
 
