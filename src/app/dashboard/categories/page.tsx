@@ -14,6 +14,7 @@ export default function CategoriesPage() {
   const [error, setError] = useState<string | null>(null);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -42,27 +43,51 @@ export default function CategoriesPage() {
 
     setIsSubmitting(true);
     try {
+      const isEditing = editingCategory !== null;
+      const payload = isEditing 
+        ? { name: newCategoryName, id: editingCategory.id }
+        : { name: newCategoryName };
+        
       const response = await fetch("/api/categories", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name: newCategoryName }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to create category");
+        throw new Error(isEditing ? "Failed to update category" : "Failed to create category");
       }
 
-      const newCategory = await response.json();
-      setCategories([...categories, newCategory]);
+      const responseData = await response.json();
+      
+      if (isEditing) {
+        // Update the category in the list
+        setCategories(categories.map(cat => 
+          cat.id === editingCategory.id ? responseData : cat
+        ));
+        setEditingCategory(null);
+      } else {
+        // Add the new category to the list
+        setCategories([...categories, responseData]);
+      }
+      
       setNewCategoryName("");
     } catch (err) {
-      setError("Failed to create category. Please try again.");
+      setError(editingCategory !== null 
+        ? "Failed to update category. Please try again." 
+        : "Failed to create category. Please try again."
+      );
       console.error(err);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleEdit = (category: Category) => {
+    setEditingCategory(category);
+    setNewCategoryName(category.name);
   };
 
   return (
@@ -89,10 +114,13 @@ export default function CategoriesPage() {
         <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
           <div className="px-4 py-5 sm:px-6 border-b border-gray-200 dark:border-gray-700">
             <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-              Create New Category
+              {editingCategory ? "Edit Category" : "Create New Category"}
             </h3>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Add a new category to organize your tasks more effectively
+              {editingCategory 
+                ? "Update an existing category" 
+                : "Add a new category to organize your tasks more effectively"
+              }
             </p>
           </div>
           <div className="px-4 py-5 sm:p-6">
@@ -112,7 +140,7 @@ export default function CategoriesPage() {
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
                     required
-                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md"
+                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full text-base px-4 py-2.5 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md"
                     placeholder="e.g., Work, Personal, Shopping"
                   />
                 </div>
@@ -121,28 +149,46 @@ export default function CategoriesPage() {
                 </p>
               </div>
               <div className="mt-5">
-                <button
-                  type="submit"
-                  disabled={isSubmitting || !newCategoryName.trim()}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Creating...
-                    </>
-                  ) : (
-                    <>
-                      <svg className="-ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                      </svg>
-                      Add Category
-                    </>
+                <div className="flex space-x-3">
+                  {editingCategory && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingCategory(null);
+                        setNewCategoryName("");
+                      }}
+                      className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                      Cancel
+                    </button>
                   )}
-                </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting || !newCategoryName.trim()}
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        {editingCategory ? "Updating..." : "Creating..."}
+                      </>
+                    ) : (
+                      <>
+                        <svg className="-ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          {editingCategory ? (
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          ) : (
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                          )}
+                        </svg>
+                        {editingCategory ? "Update Category" : "Add Category"}
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </form>
           </div>
@@ -196,6 +242,7 @@ export default function CategoriesPage() {
                       <button 
                         className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
                         title="Edit category"
+                        onClick={() => handleEdit(category)}
                       >
                         <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />

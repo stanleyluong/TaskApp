@@ -26,7 +26,7 @@ export const GET = withAuth(async (request: NextRequest, user: UserJwtPayload) =
 // Create a new category
 export const POST = withAuth(async (request: NextRequest, user: UserJwtPayload) => {
   try {
-    const { name } = await request.json();
+    const { name, id } = await request.json();
 
     if (!name) {
       return NextResponse.json(
@@ -35,6 +35,16 @@ export const POST = withAuth(async (request: NextRequest, user: UserJwtPayload) 
       );
     }
 
+    // If id is provided, update existing category
+    if (id) {
+      const updatedCategory = await prisma.category.update({
+        where: { id },
+        data: { name },
+      });
+      return NextResponse.json(updatedCategory);
+    }
+    
+    // Otherwise create new category
     const category = await prisma.category.create({
       data: {
         name,
@@ -43,7 +53,7 @@ export const POST = withAuth(async (request: NextRequest, user: UserJwtPayload) 
 
     return NextResponse.json(category, { status: 201 });
   } catch (error) {
-    console.error('Error creating category:', error);
+    console.error('Error creating/updating category:', error);
     return NextResponse.json(
       { error: 'Something went wrong' },
       { status: 500 }
