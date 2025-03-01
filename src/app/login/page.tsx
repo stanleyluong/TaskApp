@@ -38,14 +38,14 @@ export default function LoginPage() {
       console.log("Login response status:", response.status);
       const data = await response.json();
       
-      // Debug information
+      // Debug information - only log to console in development
       const debugMessage = `
         Status: ${response.status}
         Response body: ${JSON.stringify(data, null, 2)}
         Cookies: ${document.cookie}
       `;
       console.log(debugMessage);
-      setDebugInfo(debugMessage);
+      // Don't set debug info to prevent UI flash
 
       if (!response.ok) {
         throw new Error(data.error || "Login failed");
@@ -138,12 +138,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {debugInfo && (
-          <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-900 rounded-md overflow-x-auto">
-            <h3 className="text-sm font-bold mb-2">Debug Information:</h3>
-            <pre className="text-xs whitespace-pre-wrap">{debugInfo}</pre>
-          </div>
-        )}
+        {/* Debug info display removed to prevent flashing */}
       </div>
     </div>
   );
