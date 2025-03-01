@@ -12,12 +12,22 @@ export default function Navbar() {
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      await fetch("/api/auth/logout", {
+      const response = await fetch("/api/auth/logout", {
         method: "POST",
+        redirect: "follow",
       });
-      router.push("/login");
+      
+      // Let the server handle the redirect
+      if (response.redirected) {
+        window.location.href = response.url;
+      } else {
+        // Fallback if redirect somehow doesn't work
+        router.push("/login");
+      }
     } catch (error) {
       console.error("Logout failed:", error);
+      // Fallback to client-side navigation if fetch fails
+      router.push("/login");
     } finally {
       setIsLoggingOut(false);
     }
