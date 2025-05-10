@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface Category {
   id: string;
@@ -23,11 +23,13 @@ export default function CreateTaskPage() {
     dueDate: "",
   });
 
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
+
   useEffect(() => {
     // Fetch categories
     const fetchCategories = async () => {
       try {
-        const response = await fetch("/api/categories");
+        const response = await fetch(`${apiBase}/api/categories`);
         if (!response.ok) throw new Error("Failed to fetch categories");
         const data = await response.json();
         setCategories(data);
@@ -54,7 +56,7 @@ export default function CreateTaskPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/tasks", {
+      const response = await fetch(`${apiBase}/api/tasks`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

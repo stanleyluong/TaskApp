@@ -1,18 +1,20 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
+
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      const response = await fetch("/api/auth/logout", {
+      const response = await fetch(`${apiBase}/api/auth/logout`, {
         method: "POST",
         redirect: "follow",
       });

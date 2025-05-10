@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function AuthTestComponent() {
   const [authStatus, setAuthStatus] = useState<string>("Checking...");
@@ -13,9 +13,10 @@ export default function AuthTestComponent() {
     setCookies(allCookies);
     
     // Create a simple test request to check auth status
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
     const checkAuth = async () => {
       try {
-        const response = await fetch("/api/tasks", {
+        const response = await fetch(`${apiBase}/api/tasks`, {
           credentials: "include"
         });
         

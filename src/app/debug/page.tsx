@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
 import AuthTestComponent from "@/components/AuthTestComponent";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function DebugPage() {
   const [testResult, setTestResult] = useState<string | null>(null);
@@ -11,7 +11,8 @@ export default function DebugPage() {
   const testAuth = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/tasks", {
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
+      const response = await fetch(`${apiBase}/api/tasks`, {
         credentials: "include",
       });
       
