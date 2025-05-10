@@ -31,8 +31,6 @@ export default function TasksPage() {
     categoryId: "",
   });
 
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
-
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -43,13 +41,13 @@ export default function TasksPage() {
         if (filters.priority) queryParams.append("priority", filters.priority);
         if (filters.categoryId) queryParams.append("categoryId", filters.categoryId);
         
-        const tasksResponse = await fetch(`${apiBase}/api/tasks?${queryParams.toString()}`);
+        const tasksResponse = await fetch(`/api/tasks?${queryParams.toString()}`);
         if (!tasksResponse.ok) throw new Error("Failed to fetch tasks");
         const tasksData = await tasksResponse.json();
         setTasks(tasksData);
 
         // Fetch categories for filter
-        const categoriesResponse = await fetch(`${apiBase}/api/categories`);
+        const categoriesResponse = await fetch('/api/categories');
         if (!categoriesResponse.ok) throw new Error("Failed to fetch categories");
         const categoriesData = await categoriesResponse.json();
         setCategories(categoriesData);
@@ -62,7 +60,7 @@ export default function TasksPage() {
     };
 
     fetchData();
-  }, [filters, apiBase]);
+  }, [filters]);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -74,7 +72,7 @@ export default function TasksPage() {
       const taskToUpdate = tasks.find(task => task.id === taskId);
       if (!taskToUpdate) return;
 
-      const response = await fetch(`${apiBase}/api/tasks/${taskId}`, {
+      const response = await fetch(`/api/tasks/${taskId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...taskToUpdate, status: newStatus }),
@@ -94,7 +92,7 @@ export default function TasksPage() {
     if (!confirm("Are you sure you want to delete this task?")) return;
 
     try {
-      const response = await fetch(`${apiBase}/api/tasks/${taskId}`, {
+      const response = await fetch(`/api/tasks/${taskId}`, {
         method: "DELETE",
       });
 

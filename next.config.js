@@ -12,10 +12,6 @@ const nextConfig = {
   },
   eslint: {
     ignoreDuringBuilds: true,
-  },
-  // Add environment variable for API URL
-  env: {
-    NEXT_PUBLIC_API_URL: 'https://task-mnp18jndw-stanley-luongs-projects.vercel.app',
   }
 };
 

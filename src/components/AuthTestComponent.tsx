@@ -13,10 +13,9 @@ export default function AuthTestComponent() {
     setCookies(allCookies);
     
     // Create a simple test request to check auth status
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
     const checkAuth = async () => {
       try {
-        const response = await fetch(`${apiBase}/api/tasks`, {
+        const response = await fetch('/api/tasks', {
           credentials: "include"
         });
         

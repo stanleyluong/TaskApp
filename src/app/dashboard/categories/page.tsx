@@ -16,13 +16,11 @@ export default function CategoriesPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
-
   useEffect(() => {
     const fetchCategories = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`${apiBase}/api/categories`);
+        const response = await fetch('/api/categories');
         if (!response.ok) {
           throw new Error("Failed to fetch categories");
         }
@@ -50,7 +48,7 @@ export default function CategoriesPage() {
         ? { name: newCategoryName, id: editingCategory.id }
         : { name: newCategoryName };
         
-      const response = await fetch(`${apiBase}/api/categories`, {
+      const response = await fetch('/api/categories', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

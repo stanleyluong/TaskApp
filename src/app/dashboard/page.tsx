@@ -22,8 +22,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
-        const response = await fetch(`${apiBase}/api/tasks`);
+        const response = await fetch('/api/tasks');
         if (!response.ok) {
           throw new Error("Failed to fetch tasks");
         }
