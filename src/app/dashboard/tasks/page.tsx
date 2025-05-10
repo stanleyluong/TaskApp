@@ -47,7 +47,7 @@ export default function TasksPage() {
         setTasks(tasksData);
 
         // Fetch categories for filter
-        const categoriesResponse = await fetch('/api/categories');
+        const categoriesResponse = await fetch('/api/categories', { credentials: 'include' });
         if (!categoriesResponse.ok) throw new Error("Failed to fetch categories");
         const categoriesData = await categoriesResponse.json();
         setCategories(categoriesData);

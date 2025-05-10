@@ -20,7 +20,7 @@ export default function CategoriesPage() {
     const fetchCategories = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch('/api/categories');
+        const response = await fetch('/api/categories', { credentials: 'include' });
         if (!response.ok) {
           throw new Error("Failed to fetch categories");
         }
@@ -54,6 +54,7 @@ export default function CategoriesPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
+        credentials: 'include',
       });
 
       if (!response.ok) {

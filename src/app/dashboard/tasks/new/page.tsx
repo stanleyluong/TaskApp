@@ -27,7 +27,7 @@ export default function CreateTaskPage() {
     // Fetch categories
     const fetchCategories = async () => {
       try {
-        const response = await fetch('/api/categories');
+        const response = await fetch('/api/categories', { credentials: 'include' });
         if (!response.ok) throw new Error("Failed to fetch categories");
         const data = await response.json();
         setCategories(data);

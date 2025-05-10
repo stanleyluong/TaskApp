@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface Category {
   id: string;
@@ -57,7 +57,7 @@ export default function EditTaskPage({ params }: { params: { id: string } }) {
         setFormData(taskData);
 
         // Fetch categories
-        const categoriesResponse = await fetch("/api/categories");
+        const categoriesResponse = await fetch("/api/categories", { credentials: 'include' });
         if (!categoriesResponse.ok) {
           throw new Error("Failed to fetch categories");
         }
