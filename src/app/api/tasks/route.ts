@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { UserJwtPayload, withAuth } from '@/lib/api-auth';
+import { withCORS } from '@/lib/cors';
 import { prisma } from '@/lib/prisma';
-import { withAuth, UserJwtPayload } from '@/lib/api-auth';
+import { NextRequest, NextResponse } from 'next/server';
 
 // Get all tasks for the current user
-export const GET = withAuth(async (request: NextRequest, user: UserJwtPayload) => {
+export const GET = withCORS(withAuth(async (request: NextRequest, user: UserJwtPayload) => {
   try {
     console.log('Fetching tasks for user:', user.id);
     
@@ -35,10 +36,10 @@ export const GET = withAuth(async (request: NextRequest, user: UserJwtPayload) =
       { status: 500 }
     );
   }
-});
+}));
 
 // Create a new task
-export const POST = withAuth(async (request: NextRequest, user: UserJwtPayload) => {
+export const POST = withCORS(withAuth(async (request: NextRequest, user: UserJwtPayload) => {
   try {
     const { title, description, status, priority, categoryId, dueDate } = await request.json();
 
@@ -72,4 +73,4 @@ export const POST = withAuth(async (request: NextRequest, user: UserJwtPayload) 
       { status: 500 }
     );
   }
-});
+}));

@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 import { comparePasswords, generateJWT } from '@/lib/auth/utils';
+import { withCORS } from '@/lib/cors';
+import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
+export const POST = withCORS(async (request: NextRequest) => {
   console.log('Login API route called');
   
   try {
@@ -96,4 +97,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

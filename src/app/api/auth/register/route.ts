@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { generateJWT, hashPassword } from '@/lib/auth/utils';
+import { withCORS } from '@/lib/cors';
 import { prisma } from '@/lib/prisma';
-import { hashPassword, generateJWT } from '@/lib/auth/utils';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
+export const POST = withCORS(async (request: NextRequest) => {
   try {
     const { email, password, name } = await request.json();
 
@@ -74,4 +75,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

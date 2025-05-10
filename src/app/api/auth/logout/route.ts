@@ -1,6 +1,7 @@
+import { withCORS } from '@/lib/cors';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
+export const POST = withCORS(async (request: NextRequest) => {
   console.log('Logging user out');
   
   // Get the base URL
@@ -16,7 +17,7 @@ export async function POST(request: NextRequest) {
   });
   
   return response;
-}
+});
 
 // Need to handle GET requests for form-based logout attempts
 export async function GET(request: NextRequest) {

@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { UserJwtPayload, withAuthParams } from '@/lib/api-auth';
+import { withCORS } from '@/lib/cors';
 import { prisma } from '@/lib/prisma';
-import { withAuthParams, UserJwtPayload } from '@/lib/api-auth';
+import { NextRequest, NextResponse } from 'next/server';
 
 // Get a specific task
-export const GET = withAuthParams(async (
+export const GET = withCORS(withAuthParams(async (
   request: NextRequest, 
   user: UserJwtPayload,
   context
@@ -37,10 +38,10 @@ export const GET = withAuthParams(async (
       { status: 500 }
     );
   }
-});
+}));
 
 // Update a task
-export const PUT = withAuthParams(async (
+export const PUT = withCORS(withAuthParams(async (
   request: NextRequest, 
   user: UserJwtPayload,
   context
@@ -91,10 +92,10 @@ export const PUT = withAuthParams(async (
       { status: 500 }
     );
   }
-});
+}));
 
 // Delete a task
-export const DELETE = withAuthParams(async (
+export const DELETE = withCORS(withAuthParams(async (
   request: NextRequest, 
   user: UserJwtPayload,
   context
@@ -133,4 +134,4 @@ export const DELETE = withAuthParams(async (
       { status: 500 }
     );
   }
-});
+}));
