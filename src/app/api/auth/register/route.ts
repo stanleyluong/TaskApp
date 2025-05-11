@@ -64,7 +64,7 @@ export const POST = withCORS(async (request: NextRequest) => {
       path: '/',
       maxAge: 60 * 60 * 24 * 7, // 7 days
       sameSite: 'lax', // Change to lax to allow redirect
-      secure: process.env.NODE_ENV === 'production',
+      secure: true, // Always true for HTTPS
     });
 
     return response;

@@ -84,7 +84,7 @@ export const POST = withCORS(async (request: NextRequest) => {
       path: '/',
       maxAge: 60 * 60 * 24 * 7, // 7 days
       sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
     });
 
     console.log('Login successful for user:', user.id);
