@@ -19,15 +19,17 @@ export default function CategoriesPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       setIsLoading(true);
+      setError(null); // Clear previous errors
       try {
         const response = await fetch('/api/categories', { credentials: 'include' });
         if (!response.ok) {
-          throw new Error("Failed to fetch categories");
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || "Failed to fetch categories");
         }
         const data = await response.json();
         setCategories(data);
       } catch (err) {
-        setError("Failed to load categories. Please try again later.");
+        setError(err instanceof Error ? err.message : "Failed to load categories. Please try again later.");
         console.error(err);
       } finally {
         setIsLoading(false);
@@ -42,6 +44,7 @@ export default function CategoriesPage() {
     if (!newCategoryName.trim()) return;
 
     setIsSubmitting(true);
+    setError(null);
     try {
       const isEditing = editingCategory !== null;
       const payload = isEditing 
@@ -58,27 +61,26 @@ export default function CategoriesPage() {
       });
 
       if (!response.ok) {
-        throw new Error(isEditing ? "Failed to update category" : "Failed to create category");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || (isEditing ? "Failed to update category" : "Failed to create category"));
       }
 
       const responseData = await response.json();
       
       if (isEditing) {
-        // Update the category in the list
         setCategories(categories.map(cat => 
           cat.id === editingCategory.id ? responseData : cat
         ));
         setEditingCategory(null);
       } else {
-        // Add the new category to the list
         setCategories([...categories, responseData]);
       }
       
       setNewCategoryName("");
     } catch (err) {
-      setError(editingCategory !== null 
+      setError(err instanceof Error ? err.message : (editingCategory !== null 
         ? "Failed to update category. Please try again." 
-        : "Failed to create category. Please try again."
+        : "Failed to create category. Please try again.")
       );
       console.error(err);
     } finally {
@@ -89,6 +91,36 @@ export default function CategoriesPage() {
   const handleEdit = (category: Category) => {
     setEditingCategory(category);
     setNewCategoryName(category.name);
+    setError(null);
+  };
+
+  const handleDeleteCategory = async (categoryId: string) => {
+    if (!window.confirm("Are you sure you want to delete this category? This action cannot be undone.")) {
+      return;
+    }
+    setError(null);
+    // Optimistically update UI or show a loading state for the specific item if preferred
+    // For simplicity, we'll refetch or filter after success/failure
+
+    try {
+      const response = await fetch(`/api/categories/${categoryId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to delete category");
+      }
+
+      // Remove category from state
+      setCategories(categories.filter(cat => cat.id !== categoryId));
+      // Optionally, show a success message
+
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to delete category. Please try again.");
+      console.error('Error deleting category:', err);
+    }
   };
 
   return (
@@ -247,6 +279,15 @@ export default function CategoriesPage() {
                       >
                         <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      <button 
+                        className="text-red-500 hover:text-red-700 dark:hover:text-red-400"
+                        title="Delete category"
+                        onClick={() => handleDeleteCategory(category.id)}
+                      >
+                        <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                       </button>
                     </div>

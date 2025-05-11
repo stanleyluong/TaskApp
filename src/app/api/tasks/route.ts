@@ -56,7 +56,7 @@ export const POST = withCORS(withAuth(async (request: NextRequest, user: UserJwt
         description,
         status: status || 'TODO',
         priority: priority || 'MEDIUM',
-        categoryId,
+        categoryId: categoryId === "" ? null : categoryId,
         dueDate: dueDate ? new Date(dueDate) : null,
         userId: user.id,
       },
