@@ -53,13 +53,8 @@ export default function LoginPage() {
 
       // Try both navigation methods
       console.log("Login successful, attempting to redirect...");
-      try {
-        router.push("/dashboard");
-      } catch (navError) {
-        console.error("Next router navigation failed:", navError);
-        // Fallback to window.location
-        window.location.href = "/dashboard";
-      }
+      // Directly use window.location.href for a full page reload to dashboard
+      window.location.href = "/dashboard";
       
     } catch (err) {
       console.error("Login error:", err);
